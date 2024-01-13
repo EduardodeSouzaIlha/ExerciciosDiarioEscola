@@ -1,0 +1,30 @@
+version: "3.5"
+volumes:
+  pgdata:
+  pgadmin:
+services:
+  khonsudb:
+    image: postgres
+    environment:
+      - POSTGRES_DB=${POSTGRES_DB:-khonsu}
+      - POSTGRES_USER=${POSTGRES_USER:-user}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-pass1234}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+  pgadmin4:
+    image: dpage/pgadmin4
+    environment:
+      - PGADMIN_DEFAULT_EMAIL=${PGADMIN_DEFAULT_EMAIL:-user@eny.com}
+      - PGADMIN_DEFAULT_PASSWORD=${PGADMIN_DEFAULT_PASSWORD:-1234}
+      - GUNICORN_ACCESS_LOGFILE=/dev/null
+      - PGADMIN_CONFIG_UPGRADE_CHECK_ENABLED=False
+      - PGADMIN_SERVER_JSON_FILE=/app/servers.json
+    volumes:
+      - ./build/servers.json:/pgadmin4/servers.json:ro
+      - ./build/:/app
+    ports:
+      - "5050:80"
+    logging:
+      driver: none
